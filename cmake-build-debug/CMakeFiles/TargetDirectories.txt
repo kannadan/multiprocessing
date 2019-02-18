@@ -1,0 +1,3 @@
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/multipro.dir
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/edit_cache.dir

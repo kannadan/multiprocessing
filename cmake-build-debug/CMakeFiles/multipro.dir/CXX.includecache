@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
+string.h
+-
+vector
+-
+string
+-
+lodepng.h
+/home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
+iostream
+-
+lodepng.h
+/home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
+
+/home/kannadan/CLionProjects/multipro/main.cpp
+iostream
+-
+lodepng/lodepng.h
+/home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
+

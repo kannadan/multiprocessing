@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/multipro.dir/main.cpp.o CMakeFiles/multipro.dir/lodepng/lodepng.cpp.o  -o multipro 
