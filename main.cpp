@@ -54,7 +54,43 @@ image blackWhite(image img){
 
     }
     return imageNew;
+}
 
+image zznc(image img1, image img2, int window){
+    int ndisp = 260;
+    float avrg1, avrg2;
+    float maxZnnc = 0;
+    float zn = 0;
+    for(int i = 0; i < img1.height; i++){
+        for(int j = 0; j < img1.width; j++){
+            for(int d = 0; d < ndisp; d++){
+                float sum1 = 0;
+                float sum2 = 0;
+                for(int y = 0; y < window; y++){
+                    for(int x = 0; x < window; x++){
+                        if(j > 5 && j < img1.width -5 && i > 5 && i < img1.height-5){
+                            sum1 += img1.image[j+(x-5) + i*img1.width +(y-5)];
+                            sum2 += img2.image[j+(x-5) + i*img2.width +(y-5)];
+                        }
+                    }
+                }
+                avrg1 = sum1/(window*window);
+                avrg2 = sum2/(window*window);
+
+                for(int y = 0; y < window; y++){
+                    for(int x = 0; x < window; x++){
+                        if(j >= 5 && j < img1.width -5 && i >= 5 && i < img1.height-5){
+                            zn = (img1.image[j + (x-5) + i*img1.width +(y-5)] - avrg1) *
+                                    (img2.image[j + (x-5) + i*img2.width +(y-5)] - avrg2);
+                        }
+                    }
+                }
+                if(zn > maxZnnc){
+                    maxZnnc = zn;
+                }
+            }
+        }
+    }
 }
 
 int main() {
