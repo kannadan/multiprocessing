@@ -14,6 +14,11 @@ struct image {
 
 };
 
+struct coordinates {
+    int x;
+    int y;
+};
+
 image reSize(image pic, int scale){
 
     image imageNew;
@@ -77,17 +82,29 @@ double getSd(image img, int x, int y, int n, double avg) {
             sd += pow(img.image[j+(x) + (y+i)*img.width] - avg, 2);
         }
     }
-    return sqrt(sd)/((2*n+1));
+    return sqrt(sd);
 }
 
-double getCov(image img1, image img2, int x, int y, int n, double avg1, double avg2) {
+double getCov(image img1, image img2, int x, int y, int d, int n, double avg1, double avg2) {
     double cov = 0;
     for (int i=-n; i<=n; i++) {
         for (int j=-n; j<=n; j++) {
-            cov += (img1.image[j+(x) + (y+i)*img1.width] - avg1) * (img2.image[j+(x) + (y+i)*img2.width] - avg2);
+            cov += (img1.image[j+(x) + (y+i)*img1.width] - avg1) * (img2.image[j-d+(x) + (y+i)*img2.width] - avg2);
         }
     }
     return cov;
+}
+
+image normalize(image img){
+    image imageNew;
+    imageNew.height = img.height;
+    imageNew.width = img.width;
+    imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
+
+    for(int y = 0; y < img.height*img.width; y++){
+        imageNew.image[y] = (img.image[y]/260.0)*255;
+    }
+    return imageNew;
 }
 
 image zncc(image img1, image img2, int window){
@@ -97,7 +114,7 @@ image zncc(image img1, image img2, int window){
     imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
     int ndisp = 260;
     float avrg1, avrg2, sd1, sd2, cov;
-    float maxZnnc = 0;
+    float maxZnnc;
     float zn = 0;
     int bestD;
     int n = window/2;
@@ -105,7 +122,7 @@ image zncc(image img1, image img2, int window){
         cout << "im here " << i << endl;
         for(int j = 0; j < img1.width; j++){
             bestD = 0;
-            maxZnnc = 0;
+            maxZnnc = -10000;
             for(int d = 0; d < ndisp; d++){
                 float sum1 = 0;
                 float sum2 = 0;
@@ -117,10 +134,10 @@ image zncc(image img1, image img2, int window){
                     sd1 = getSd(img1, j, i, n, avrg1);
                     sd2 = getSd(img2, j-d, i, n, avrg2);
 
-                    cov = getCov(img1, img2, j, i, n, avrg1, avrg2);
+                    cov = getCov(img1, img2, j, i, d, n, avrg1, avrg2);
 
                     zn = cov / (sd1 * sd2);
-                    //cout << avrg1 << " " << avrg2 << " " << sd1 << " " << sd2 << " " << cov << " " << zn << " " << endl;
+                    //cout << avrg1 << " " << avrg2 << " " << sd1 << " " << sd2 << " " << cov << " " << zn << " " << d << endl;
                     if (zn > maxZnnc) {
                         maxZnnc = zn;
                         bestD = d;
@@ -145,6 +162,75 @@ void saveImage(image img, char* name, LodePNGColorType colortype, unsigned bitde
     if(error){
         cout << "virihe " << error << lodepng_error_text(error) <<endl;
     }
+
+}
+
+image crossCheck(image img1, image img2, int threshold){
+
+    image imageNew;
+    imageNew.height = img1.height;
+    imageNew.width = img1.width;
+    imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
+
+    for(int y = 0; y < img1.height*img1.width; y++){
+        int absolute = abs(img1.image[y] - img2.image[y]);
+        imageNew.image[y] = absolute < threshold ? img1.image[y] : 0;
+    }
+    return imageNew;
+
+}
+
+//ToDO: Finish occlusion
+int checkNeighbors(image img, std::vector<coordinates> visited, std::vector<coordinates> toVisit,
+                   std::vector<coordinates> toDo){
+    int result = 0;
+    while(visited.size() != 0) {
+        for (std::vector<coordinates>::iterator it = toVisit.begin(); it != toVisit.end(); ++it) {
+            if (int(img.image[it.x + it.y * img.width]) != 0){
+                result = int(img.image[it.x + it.y * img.width]);
+            }
+            else{
+                for (int i = -1; i < 2; i++) {
+                    for (int j = -1; j < 2; j++) {
+                        for (std::vector<coordinates>::iterator it2 = visited.begin(); it2 != visited.end(); ++it2) {
+                            if (it2.x != j + it.x && it2.y != i + it.y) {
+                                coordinates newCord;
+                                newCord.x = j + it.x;
+                                newCord.y = i + it.x;
+                                toDo.push_back(newCord);
+                            }
+                        }
+
+                    }
+                }
+
+            }
+            visited.push_back(it);
+        }
+    }
+
+
+}
+
+image occulsion(image img){
+    image imageNew;
+    imageNew.height = img.height;
+    imageNew.width = img.width;
+    imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
+    vector<coordinates> visited;
+    for(int y = 0; y < img.height; y++){
+        for(int x = 0; x < img.width; x++){
+            if (int(img.image[x + y*img.width]) == 0){
+                coordinates starter;
+                starter.x = x;
+                starter.y = y;
+                visited.push_back(starter);
+                checkNeighbors(x, y, img, visited);
+            }
+        }
+
+    }
+    return imageNew;
 
 }
 
@@ -180,16 +266,19 @@ int main() {
     image image1B = blackWhite(image1S);
     image image2B = blackWhite(image2S);
 
+/*
     saveImage(image1B, "./im0Black.png", LCT_GREY, 8);
-    saveImage(image2B, "./im1Black.png", LCT_GREY, 8);
+    saveImage(image2B, "./im1Black.png", LCT_GREY, 8);*/
 
-    image znccImage = zncc(image1B, image2B, 9);
-    cout << round(9/2.0);
-    error = lodepng_encode_file("./imZncc.png", znccImage.image, znccImage.width, znccImage.height, LCT_GREY, 8);
-    if(error){
-        cout << "virihe " << error << lodepng_error_text(error) <<endl;
-    }
+    image znccImage1 = zncc(image1B, image2B, 9);
+    image znccImage2 = zncc(image2B, image1B, 9);
+    image normal1 = normalize(znccImage1);
+    image normal2 = normalize(znccImage2);
+    saveImage(normal1, "./imZnccN.png", LCT_GREY, 8);
+    saveImage(normal2, "./im2ZnccN.png", LCT_GREY, 8);
 
+    image crossImg = crossCheck(znccImage1, znccImage2, 8);
+    saveImage(crossImg, "./imcross.png", LCT_GREY, 8);
 
 
     return 0;
