@@ -1,5 +1,8 @@
 #include <iostream>
+#include <cmath>
+#include <tgmath.h>
 #include "lodepng/lodepng.h"
+
 
 using namespace std;
 
@@ -8,6 +11,7 @@ struct image {
     unsigned char* image;
     unsigned width;
     unsigned height;
+
 };
 
 image reSize(image pic, int scale){
@@ -56,42 +60,94 @@ image blackWhite(image img){
     return imageNew;
 }
 
-image zznc(image img1, image img2, int window){
+double getAverage(image img, int x, int y, int n) {
+    double avg = 0;
+    for (int i=-n; i<=n; i++) {
+        for (int j=-n; j<=n; j++) {
+            avg += img.image[j+(x) + (y+i)*img.width];
+        }
+    }
+    return(avg/((2*n+1)*(2*n+1)));
+}
+
+double getSd(image img, int x, int y, int n, double avg) {
+    double sd = 0;
+    for (int i=-n; i<=n; i++) {
+        for (int j=-n; j<=n; j++) {
+            sd += pow(img.image[j+(x) + (y+i)*img.width] - avg, 2);
+        }
+    }
+    return sqrt(sd)/((2*n+1));
+}
+
+double getCov(image img1, image img2, int x, int y, int n, double avg1, double avg2) {
+    double cov = 0;
+    for (int i=-n; i<=n; i++) {
+        for (int j=-n; j<=n; j++) {
+            cov += (img1.image[j+(x) + (y+i)*img1.width] - avg1) * (img2.image[j+(x) + (y+i)*img2.width] - avg2);
+        }
+    }
+    return cov;
+}
+
+image zncc(image img1, image img2, int window){
+    image imageNew;
+    imageNew.height = img1.height;
+    imageNew.width = img1.width;
+    imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
     int ndisp = 260;
-    float avrg1, avrg2;
+    float avrg1, avrg2, sd1, sd2, cov;
     float maxZnnc = 0;
     float zn = 0;
+    int bestD;
+    int n = window/2;
     for(int i = 0; i < img1.height; i++){
+        cout << "im here " << i << endl;
         for(int j = 0; j < img1.width; j++){
+            bestD = 0;
+            maxZnnc = 0;
             for(int d = 0; d < ndisp; d++){
                 float sum1 = 0;
                 float sum2 = 0;
-                for(int y = 0; y < window; y++){
-                    for(int x = 0; x < window; x++){
-                        if(j > 5 && j < img1.width -5 && i > 5 && i < img1.height-5){
-                            sum1 += img1.image[j+(x-5) + i*img1.width +(y-5)];
-                            sum2 += img2.image[j+(x-5) + i*img2.width +(y-5)];
-                        }
-                    }
-                }
-                avrg1 = sum1/(window*window);
-                avrg2 = sum2/(window*window);
+                if(j - d > n && j < img1.width - n && i > n && i < img1.height- n) {
 
-                for(int y = 0; y < window; y++){
-                    for(int x = 0; x < window; x++){
-                        if(j >= 5 && j < img1.width -5 && i >= 5 && i < img1.height-5){
-                            zn = (img1.image[j + (x-5) + i*img1.width +(y-5)] - avrg1) *
-                                    (img2.image[j + (x-5) + i*img2.width +(y-5)] - avrg2);
-                        }
+                    avrg1 = getAverage(img1, j, i, n);
+                    avrg2 = getAverage(img2, j-d, i, n);
+
+                    sd1 = getSd(img1, j, i, n, avrg1);
+                    sd2 = getSd(img2, j-d, i, n, avrg2);
+
+                    cov = getCov(img1, img2, j, i, n, avrg1, avrg2);
+
+                    zn = cov / (sd1 * sd2);
+                    //cout << avrg1 << " " << avrg2 << " " << sd1 << " " << sd2 << " " << cov << " " << zn << " " << endl;
+                    if (zn > maxZnnc) {
+                        maxZnnc = zn;
+                        bestD = d;
                     }
+
+
                 }
-                if(zn > maxZnnc){
-                    maxZnnc = zn;
-                }
+
+            }
+            imageNew.image[j + i*img1.width] = bestD;
+            if(i % 10 == 0){
+                cout << bestD << endl;
             }
         }
     }
+    return imageNew;
 }
+
+void saveImage(image img, char* name, LodePNGColorType colortype, unsigned bitdepth){
+    unsigned error;
+    error = lodepng_encode_file(name, img.image, img.width, img.height, colortype, bitdepth);
+    if(error){
+        cout << "virihe " << error << lodepng_error_text(error) <<endl;
+    }
+
+}
+
 
 int main() {
     cout << "Hello, World!" << endl;
@@ -114,18 +170,22 @@ int main() {
     }
 
 
+    image image1S = reSize(image1, 4);
+    image image2S = reSize(image2, 4);
+/*
+    saveImage(image1, "./im0real.png", LCT_RGBA, 8);
+    saveImage(image1S, "./im0smoll.png", LCT_RGBA, 8);
+    saveImage(image2S, "./im1smoll.png", LCT_RGBA, 8);
+*/
+    image image1B = blackWhite(image1S);
+    image image2B = blackWhite(image2S);
 
+    saveImage(image1B, "./im0Black.png", LCT_GREY, 8);
+    saveImage(image2B, "./im1Black.png", LCT_GREY, 8);
 
-
-
-    error = lodepng_encode_file("./im0Result.png", image1.image, image1.width, image1.height, LCT_RGBA, 8);
-    if(error){
-        cout << "virihe " << error << lodepng_error_text(error) <<endl;
-    }
-
-    image imageNew = reSize(image1, 4);
-    imageNew = blackWhite(imageNew);
-    error = lodepng_encode_file("./im0Smoll.png", imageNew.image, imageNew.width, imageNew.height, LCT_GREY, 8);
+    image znccImage = zncc(image1B, image2B, 9);
+    cout << round(9/2.0);
+    error = lodepng_encode_file("./imZncc.png", znccImage.image, znccImage.width, znccImage.height, LCT_GREY, 8);
     if(error){
         cout << "virihe " << error << lodepng_error_text(error) <<endl;
     }

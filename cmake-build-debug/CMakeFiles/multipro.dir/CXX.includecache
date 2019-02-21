@@ -23,6 +23,10 @@ lodepng.h
 /home/kannadan/CLionProjects/multipro/main.cpp
 iostream
 -
+cmath
+-
+tgmath.h
+-
 lodepng/lodepng.h
 /home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
 
