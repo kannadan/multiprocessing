@@ -1,0 +1,10 @@
+Results for phase 2:
+
+1119.75 seconds to run full program
+
+%Cpu0  :100,0 us,  0,0 sy,  0,0 ni,  0,0 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu1  :  4,3 us,  1,6 sy,  0,0 ni, 93,8 id,  0,0 wa,  0,0 hi,  0,3 si,  0,0 st
+%Cpu2  :  3,0 us,  1,0 sy,  0,0 ni, 96,0 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+%Cpu3  :  3,0 us,  3,3 sy,  0,0 ni, 93,7 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
+
+100% cpu load most of the time;

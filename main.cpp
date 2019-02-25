@@ -2,6 +2,7 @@
 #include <cmath>
 #include <tgmath.h>
 #include "lodepng/lodepng.h"
+#include <sys/time.h>
 
 
 using namespace std;
@@ -14,10 +15,7 @@ struct image {
 
 };
 
-struct coordinates {
-    int x;
-    int y;
-};
+
 
 image reSize(image pic, int scale){
 
@@ -181,51 +179,37 @@ image crossCheck(image img1, image img2, int threshold){
 }
 
 //ToDO: Finish occlusion
-int checkNeighbors(image img, std::vector<coordinates> visited, std::vector<coordinates> toVisit,
-                   std::vector<coordinates> toDo){
-    int result = 0;
-    while(visited.size() != 0) {
-        for (std::vector<coordinates>::iterator it = toVisit.begin(); it != toVisit.end(); ++it) {
-            if (int(img.image[it.x + it.y * img.width]) != 0){
-                result = int(img.image[it.x + it.y * img.width]);
-            }
-            else{
-                for (int i = -1; i < 2; i++) {
-                    for (int j = -1; j < 2; j++) {
-                        for (std::vector<coordinates>::iterator it2 = visited.begin(); it2 != visited.end(); ++it2) {
-                            if (it2.x != j + it.x && it2.y != i + it.y) {
-                                coordinates newCord;
-                                newCord.x = j + it.x;
-                                newCord.y = i + it.x;
-                                toDo.push_back(newCord);
-                            }
-                        }
-
-                    }
+int getClosest(image img, int x, int y){
+    int result;
+    float minDist = 10000;
+    for(int j = 0; j < img.height; j++) {
+        for (int i = 0; i < img.width; i++) {
+            if (img.image[i + j * img.width]) {
+                if (abs(i - x) + abs(j - y) < minDist) {
+                    minDist = abs(i - x) + abs(j - y);
+                    result = img.image[i + j * img.width];
                 }
-
             }
-            visited.push_back(it);
         }
     }
-
+    return result;
 
 }
 
 image occulsion(image img){
+    cout << "occulsion going" << endl;
     image imageNew;
     imageNew.height = img.height;
     imageNew.width = img.width;
     imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
-    vector<coordinates> visited;
     for(int y = 0; y < img.height; y++){
+        cout << "im here ocluding " << y << endl;
         for(int x = 0; x < img.width; x++){
             if (int(img.image[x + y*img.width]) == 0){
-                coordinates starter;
-                starter.x = x;
-                starter.y = y;
-                visited.push_back(starter);
-                checkNeighbors(x, y, img, visited);
+                imageNew.image[x + y*img.width] = getClosest(img, x, y);
+            }
+            else{
+                imageNew.image[x + y*img.width] = img.image[x + y*img.width];
             }
         }
 
@@ -237,6 +221,10 @@ image occulsion(image img){
 
 int main() {
     cout << "Hello, World!" << endl;
+    struct timeval tp;
+    gettimeofday(&tp, NULL);
+    long int msa = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << msa/1000 << endl;
 
     image image1;
     image image2;
@@ -280,6 +268,11 @@ int main() {
     image crossImg = crossCheck(znccImage1, znccImage2, 8);
     saveImage(crossImg, "./imcross.png", LCT_GREY, 8);
 
+    image occulsionImg = occulsion(crossImg);
+    saveImage(occulsionImg, "./imgOcc.png", LCT_GREY, 8);
+    gettimeofday(&tp, NULL);
+    long int mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << (mse - msa) / 1000.0 << endl;
 
     return 0;
 }

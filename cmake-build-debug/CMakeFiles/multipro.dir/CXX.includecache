@@ -29,4 +29,6 @@ tgmath.h
 -
 lodepng/lodepng.h
 /home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
+sys/time.h
+-
 
