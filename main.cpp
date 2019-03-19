@@ -3,6 +3,8 @@
 #include <tgmath.h>
 #include "lodepng/lodepng.h"
 #include <sys/time.h>
+#include <omp.h>
+
 
 
 using namespace std;
@@ -116,8 +118,9 @@ image zncc(image img1, image img2, int window){
     float zn = 0;
     int bestD;
     int n = window/2;
+    #pragma omp parallel for
     for(int i = 0; i < img1.height; i++){
-        cout << "im here " << i << endl;
+        //cout << "im here " << i << endl;
         for(int j = 0; j < img1.width; j++){
             bestD = 0;
             maxZnnc = -10000;
@@ -146,9 +149,9 @@ image zncc(image img1, image img2, int window){
 
             }
             imageNew.image[j + i*img1.width] = bestD;
-            if(i % 10 == 0){
+            /*if(i % 10 == 0){
                 cout << bestD << endl;
-            }
+            }*/
         }
     }
     return imageNew;
@@ -178,7 +181,7 @@ image crossCheck(image img1, image img2, int threshold){
 
 }
 
-//ToDO: Finish occlusion
+
 int getClosest(image img, int x, int y){
     int result;
     float minDist = 10000;
@@ -202,8 +205,9 @@ image occulsion(image img){
     imageNew.height = img.height;
     imageNew.width = img.width;
     imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
+    #pragma omp parallel for
     for(int y = 0; y < img.height; y++){
-        cout << "im here ocluding " << y << endl;
+        //cout << "im here ocluding " << y << endl;
         for(int x = 0; x < img.width; x++){
             if (int(img.image[x + y*img.width]) == 0){
                 imageNew.image[x + y*img.width] = getClosest(img, x, y);
@@ -221,6 +225,14 @@ image occulsion(image img){
 
 int main() {
     cout << "Hello, World!" << endl;
+
+#pragma omp parallel for
+    for(int n=0; n<10; ++n)
+    {
+        printf(" %d", n);
+    }
+    printf(".\n");
+
     struct timeval tp;
     gettimeofday(&tp, NULL);
     long int msa = tp.tv_sec * 1000 + tp.tv_usec / 1000;
@@ -229,9 +241,12 @@ int main() {
     image image1;
     image image2;
     unsigned error;
-
     image1.error = lodepng_decode32_file(&image1.image, &image1.width, &image1.height, "./im0.png");
     image2.error = lodepng_decode32_file(&image2.image, &image2.width, &image2.height, "./im1.png");
+
+    gettimeofday(&tp, NULL);
+    long int mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << "images loaded " << (mse - msa) / 1000.0 << endl;
 
     if(!image1.error && !image2.error) {
         cout << "no errors!" << endl;
@@ -254,25 +269,52 @@ int main() {
     image image1B = blackWhite(image1S);
     image image2B = blackWhite(image2S);
 
+    gettimeofday(&tp, NULL);
+    mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << "Resize and black and white" << (mse - msa) / 1000.0 << endl;
+
 /*
     saveImage(image1B, "./im0Black.png", LCT_GREY, 8);
     saveImage(image2B, "./im1Black.png", LCT_GREY, 8);*/
+
+    gettimeofday(&tp, NULL);
+    long int msS = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
     image znccImage1 = zncc(image1B, image2B, 9);
     image znccImage2 = zncc(image2B, image1B, 9);
     image normal1 = normalize(znccImage1);
     image normal2 = normalize(znccImage2);
+
+    gettimeofday(&tp, NULL);
+    mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << "Zncc and normalization" << (mse - msS) / 1000.0 << endl;
+
     saveImage(normal1, "./imZnccN.png", LCT_GREY, 8);
     saveImage(normal2, "./im2ZnccN.png", LCT_GREY, 8);
+
+    gettimeofday(&tp, NULL);
+    msS = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
     image crossImg = crossCheck(znccImage1, znccImage2, 8);
     saveImage(crossImg, "./imcross.png", LCT_GREY, 8);
 
+    gettimeofday(&tp, NULL);
+    mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << "Cross Image" << (mse - msS) / 1000.0 << endl;
+
+    gettimeofday(&tp, NULL);
+    msS = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+
     image occulsionImg = occulsion(crossImg);
     saveImage(occulsionImg, "./imgOcc.png", LCT_GREY, 8);
+
     gettimeofday(&tp, NULL);
-    long int mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
-    cout << (mse - msa) / 1000.0 << endl;
+    mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << "Occulsion " << (mse - msS) / 1000.0 << endl;
+
+    gettimeofday(&tp, NULL);
+    mse = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    cout << "Running time " << (mse - msa) / 1000.0 << endl;
 
     return 0;
 }
