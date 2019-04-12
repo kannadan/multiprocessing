@@ -23,7 +23,7 @@ CPU load
 %Cpu2  : 99,3 us,  0,7 sy,  0,0 ni,  0,0 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
 %Cpu3  : 99,0 us,  1,0 sy,  0,0 ni,  0,0 id,  0,0 wa,  0,0 hi,  0,0 si,  0,0 st
 
-523.113 seconds to run full program
-Resize and black and white 2.534 seconds
-Zncc and normalization 311.35 seconds (5.189 min)
-Occulsion 208.741 seconds (3.479 min)
+502.229 seconds to run full program  (8.370 min)
+Resize and black and white 2.419 seconds
+Zncc and normalization 295.725 seconds (4.92875 min)
+Occulsion 203.583 seconds (3.39305 min)

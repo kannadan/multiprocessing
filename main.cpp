@@ -1,10 +1,13 @@
+#define CL_HPP_ENABLE_EXCEPTIONS
+#define CL_HPP_TARGET_OPENCL_VERSION 200
+
 #include <iostream>
 #include <cmath>
 #include <tgmath.h>
 #include "lodepng/lodepng.h"
 #include <sys/time.h>
 #include <omp.h>
-
+#include <CL/cl.hpp>
 
 
 using namespace std;
@@ -113,13 +116,14 @@ image zncc(image img1, image img2, int window){
     imageNew.width = img1.width;
     imageNew.image = new unsigned char [(imageNew.width * imageNew.height)];
     int ndisp = 260;
-    float avrg1, avrg2, sd1, sd2, cov;
-    float maxZnnc;
-    float zn = 0;
-    int bestD;
+
     int n = window/2;
     #pragma omp parallel for
     for(int i = 0; i < img1.height; i++){
+        float avrg1, avrg2, sd1, sd2, cov;
+        float maxZnnc;
+        float zn = 0;
+        int bestD;
         //cout << "im here " << i << endl;
         for(int j = 0; j < img1.width; j++){
             bestD = 0;
@@ -226,12 +230,23 @@ image occulsion(image img){
 int main() {
     cout << "Hello, World!" << endl;
 
-#pragma omp parallel for
+
+    /*#pragma omp parallel for
     for(int n=0; n<10; ++n)
     {
-        printf(" %d", n);
+        int p = 0;
+        p = 0;
+
+        ostringstream oss;
+
+        for(int x=0; x<10; ++x)
+        {
+            oss << p << " ";
+            p++;
+        }
+        cout << oss.str() << endl;
     }
-    printf(".\n");
+    printf(".\n");*/
 
     struct timeval tp;
     gettimeofday(&tp, NULL);

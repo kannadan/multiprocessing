@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.5)
 project(multipro)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -10,6 +10,13 @@ if (OPENMP_FOUND)
 endif()
 
 
+find_package( OpenCL REQUIRED )
+
 include_directories("/home/kannadan/CLionProjects/multipro/lodepng")
 
+include_directories( ${OPENCL_INCLUDE_DIR} )
+
+
 add_executable(multipro main.cpp lodepng/lodepng.cpp)
+target_link_libraries(multipro ${OPENCL_LIBRARIES})
+

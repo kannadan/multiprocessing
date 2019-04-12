@@ -1,0 +1,1 @@
+/usr/bin/c++   -fopenmp -g    CMakeFiles/multipro.dir/main.cpp.o CMakeFiles/multipro.dir/lodepng/lodepng.cpp.o  -o multipro /usr/lib/x86_64-linux-gnu/libOpenCL.so 

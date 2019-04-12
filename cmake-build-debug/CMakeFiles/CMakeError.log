@@ -1,0 +1,186 @@
+Determining if the CL_VERSION_2_2 exist failed with the following output:
+Change Dir: /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_7b43d/fast"
+/usr/bin/make -f CMakeFiles/cmTC_7b43d.dir/build.make CMakeFiles/cmTC_7b43d.dir/build
+make[1]: Entering directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_7b43d.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fopenmp    -o CMakeFiles/cmTC_7b43d.dir/CheckSymbolExists.c.o   -c /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:47: fatal error: OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h: Tiedostoa tai hakemistoa ei ole
+compilation terminated.
+CMakeFiles/cmTC_7b43d.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_7b43d.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_7b43d.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_7b43d/fast' failed
+make: *** [cmTC_7b43d/fast] Error 2
+
+File /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_2
+  return ((int*)(&CL_VERSION_2_2))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_2_1 exist failed with the following output:
+Change Dir: /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_764c4/fast"
+/usr/bin/make -f CMakeFiles/cmTC_764c4.dir/build.make CMakeFiles/cmTC_764c4.dir/build
+make[1]: Entering directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_764c4.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fopenmp    -o CMakeFiles/cmTC_764c4.dir/CheckSymbolExists.c.o   -c /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:47: fatal error: OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h: Tiedostoa tai hakemistoa ei ole
+compilation terminated.
+CMakeFiles/cmTC_764c4.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_764c4.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_764c4.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_764c4/fast' failed
+make: *** [cmTC_764c4/fast] Error 2
+
+File /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_1
+  return ((int*)(&CL_VERSION_2_1))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_2_0 exist failed with the following output:
+Change Dir: /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_782da/fast"
+/usr/bin/make -f CMakeFiles/cmTC_782da.dir/build.make CMakeFiles/cmTC_782da.dir/build
+make[1]: Entering directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_782da.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fopenmp    -o CMakeFiles/cmTC_782da.dir/CheckSymbolExists.c.o   -c /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:47: fatal error: OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h: Tiedostoa tai hakemistoa ei ole
+compilation terminated.
+CMakeFiles/cmTC_782da.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_782da.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_782da.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_782da/fast' failed
+make: *** [cmTC_782da/fast] Error 2
+
+File /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_0
+  return ((int*)(&CL_VERSION_2_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_1_2 exist failed with the following output:
+Change Dir: /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_24f17/fast"
+/usr/bin/make -f CMakeFiles/cmTC_24f17.dir/build.make CMakeFiles/cmTC_24f17.dir/build
+make[1]: Entering directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_24f17.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fopenmp    -o CMakeFiles/cmTC_24f17.dir/CheckSymbolExists.c.o   -c /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:47: fatal error: OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h: Tiedostoa tai hakemistoa ei ole
+compilation terminated.
+CMakeFiles/cmTC_24f17.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_24f17.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_24f17.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_24f17/fast' failed
+make: *** [cmTC_24f17/fast] Error 2
+
+File /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_1_2
+  return ((int*)(&CL_VERSION_1_2))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_1_1 exist failed with the following output:
+Change Dir: /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2858c/fast"
+/usr/bin/make -f CMakeFiles/cmTC_2858c.dir/build.make CMakeFiles/cmTC_2858c.dir/build
+make[1]: Entering directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_2858c.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fopenmp    -o CMakeFiles/cmTC_2858c.dir/CheckSymbolExists.c.o   -c /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:47: fatal error: OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h: Tiedostoa tai hakemistoa ei ole
+compilation terminated.
+CMakeFiles/cmTC_2858c.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_2858c.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_2858c.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_2858c/fast' failed
+make: *** [cmTC_2858c/fast] Error 2
+
+File /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_1_1
+  return ((int*)(&CL_VERSION_1_1))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_1_0 exist failed with the following output:
+Change Dir: /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_b994c/fast"
+/usr/bin/make -f CMakeFiles/cmTC_b994c.dir/build.make CMakeFiles/cmTC_b994c.dir/build
+make[1]: Entering directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b994c.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -fopenmp    -o CMakeFiles/cmTC_b994c.dir/CheckSymbolExists.c.o   -c /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:47: fatal error: OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h: Tiedostoa tai hakemistoa ei ole
+compilation terminated.
+CMakeFiles/cmTC_b994c.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_b994c.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_b994c.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_b994c/fast' failed
+make: *** [cmTC_b994c/fast] Error 2
+
+File /home/kannadan/CLionProjects/multipro/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <OpenCL_INCLUDE_DIR-NOTFOUND/CL/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_1_0
+  return ((int*)(&CL_VERSION_1_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
