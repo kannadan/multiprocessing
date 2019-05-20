@@ -20,6 +20,11 @@ struct image {
 
 };
 
+struct kernelInfo {
+    char *source_str;
+    size_t source_size;
+};
+
 
 
 image reSize(image pic, int scale){
@@ -226,6 +231,25 @@ image occulsion(image img){
 
 }
 
+kernelInfo readKernel(char* kernelName){
+    FILE *fp;
+    char *source_str;
+    size_t source_size;
+
+    fp = fopen(kernelName, "r");
+    if (!fp) {
+        fprintf(stderr, "Failed to load kernel.\n");
+        exit(1);
+    }
+    source_str = (char*)malloc(0x100000);
+    source_size = fread( source_str, 1, 0x100000, fp);
+    fclose( fp );
+    kernelInfo info;
+    info.source_size = source_size;
+    info.source_str = source_str;
+    return info;
+}
+
 
 int main() {
     cout << "Hello, World!" << endl;
@@ -345,22 +369,80 @@ int main() {
 
     }
 
-    /*#pragma omp parallel for
-    for(int n=0; n<10; ++n)
-    {
-        int p = 0;
-        p = 0;
+    /*
+     * Code for opencl code from simpleopencl.blogspot.com/2013/06/tutorial-simple-start-with-opencl-and-c.html
+     */
 
-        ostringstream oss;
-
-        for(int x=0; x<10; ++x)
-        {
-            oss << p << " ";
-            p++;
-        }
-        cout << oss.str() << endl;
+    //platforms
+    std::vector<cl::Platform> all_platforms;
+    cl::Platform::get(&all_platforms);
+    if(all_platforms.size()==0){
+        std::cout<<" No platforms found. Check OpenCL installation!\n";
+        exit(1);
     }
-    printf(".\n");*/
+    cl::Platform default_platform=all_platforms[0];
+    std::cout << "Using platform: "<<default_platform.getInfo<CL_PLATFORM_NAME>()<<"\n";
+
+    //devices
+    std::vector<cl::Device> all_devices;
+    default_platform.getDevices(CL_DEVICE_TYPE_ALL, &all_devices);
+    if(all_devices.size()==0){
+        std::cout<<" No devices found. Check OpenCL installation!\n";
+        exit(1);
+    }
+    cl::Device default_device=all_devices[0];
+    std::cout<< "Using device: "<<default_device.getInfo<CL_DEVICE_NAME>()<<"\n";
+
+
+    //Cl context and program sources
+    /*cl::Context context({default_device});
+    cl::Program::Sources sources;
+
+    std::string kernel_code=
+            "   void kernel simple_add(global const int* A, global const int* B, global int* C){       "
+            "       int index;"
+            "       if (get_global_id(0) == 10){"
+            "           index = 0;"
+            "       }"
+            "       else{"
+            "           index = get_global_id(0) + 1;"
+            "       }"
+            "       C[index]=A[index]+B[index];                 "
+            "   }                                                                               ";
+
+    sources.push_back({kernel_code.c_str(),kernel_code.length()});
+
+    cl::Program program(context,sources);
+    if(program.build({default_device})!=CL_SUCCESS){
+        std::cout<<" Error building: "<<program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device)<<"\n";
+        exit(1);
+    }
+
+    // create buffers on the device
+    cl::Buffer buffer_A(context,CL_MEM_READ_WRITE,sizeof(int)*10);
+    cl::Buffer buffer_B(context,CL_MEM_READ_WRITE,sizeof(int)*10);
+    cl::Buffer buffer_C(context,CL_MEM_READ_WRITE,sizeof(int)*10);
+
+    int A[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    int B[] = {0, 1, 2, 0, 1, 2, 0, 1, 2, 0};
+
+    cl::CommandQueue queue(context,default_device);
+
+    queue.enqueueWriteBuffer(buffer_A,CL_TRUE,0,sizeof(int)*10,A);
+    queue.enqueueWriteBuffer(buffer_B,CL_TRUE,0,sizeof(int)*10,B);
+
+    cl::make_kernel<cl::Buffer, cl::Buffer, cl::Buffer> simple_add(cl::Kernel(program, "simple_add"));
+    cl::EnqueueArgs eargs(queue, cl::NullRange, cl::NDRange(10), cl::NullRange);
+    simple_add(eargs, buffer_A, buffer_B, buffer_C).wait();
+
+    int C[10];
+    //read result C from the device to array C
+    queue.enqueueReadBuffer(buffer_C,CL_TRUE,0,sizeof(int)*10,C);
+
+    std::cout<<" result: \n";
+    for(int i=0;i<10;i++){
+        std::cout<<C[i]<<" ";
+    }*/
 
     struct timeval tp;
     gettimeofday(&tp, NULL);
@@ -387,7 +469,65 @@ int main() {
         return 1;
     }
 
+    cl::Context context({default_device});
+    cl::Program::Sources sources;
 
+
+    kernelInfo info = readKernel("resize.cl");
+    kernelInfo info2 = readKernel("grayscale.cl");
+    sources.push_back({info.source_str, info.source_size});
+    sources.push_back({info2.source_str, info2.source_size});
+    cl::Program program(context,sources);
+    if(program.build({default_device})!=CL_SUCCESS){
+        std::cout<<" Error building: "<<program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device)<<"\n";
+        exit(1);
+    }
+    int scale = 4;
+    cl::Buffer buffer_normal_image(context,CL_MEM_READ_WRITE,sizeof(unsigned char)*image1.width*image1.height*4);
+    cl::Buffer buffer_reSized_image(context,CL_MEM_READ_WRITE,sizeof(unsigned char)*image1.width*image1.height*4/scale);
+
+    cl::CommandQueue queue(context,default_device);
+
+    queue.enqueueWriteBuffer(buffer_normal_image,CL_TRUE,0,sizeof(unsigned char)*image1.width*image1.height*4, image1.image);
+
+
+
+
+    cl::make_kernel<cl::Buffer, cl::Buffer, cl_int, cl_int> reSizeGPU(cl::Kernel(program, "reSizeGPU"));
+    cl::EnqueueArgs eargs(queue, cl::NullRange, cl::NDRange(image1.width/scale, image1.height/scale), cl::NullRange);
+
+    cl::make_kernel<cl::Buffer, cl::Buffer> grayScaleGPU(cl::Kernel(program, "grayScaleGPU"));
+    cl::EnqueueArgs eargs2(queue, cl::NullRange, cl::NDRange(image1.width*image1.height/scale), cl::NullRange);
+
+    reSizeGPU(eargs, buffer_normal_image, buffer_reSized_image, scale, image1.width).wait();
+    cout << "resized with gpu" << endl;
+
+    grayScaleGPU(eargs2, buffer_reSized_image, buffer_reSized_image).wait();
+
+    image image1Resized;
+    image1Resized.height = image1.height/scale;
+    image1Resized.width = image1.width/scale;
+    image1Resized.error = image1.error;
+    int imageSize = image1Resized.width*image1Resized.height*4;
+
+    unsigned char *imageResized = new unsigned char[imageSize];
+    //read result C from the device to array C
+
+    queue.enqueueReadBuffer(buffer_reSized_image,CL_TRUE,0,sizeof(unsigned char) * imageSize, imageResized);
+    cout << "buffer read " << int(imageResized[0]) << endl;
+
+    image1Resized.image = imageResized;
+
+    cout << "size " << sizeof(image1.image) << endl;
+    cout << "size " << sizeof(image1Resized.image) << endl;
+
+
+    /*for (int i = 0; i < image1Resized.width*image1Resized.height*4; i++){
+        cout << int(image1.image[i]) << endl;
+    }*/
+    saveImage(image1Resized, "./im0smollGPU.png", LCT_GREY, 8);
+
+    return 0;
     image image1S = reSize(image1, 4);
     image image2S = reSize(image2, 4);
 /*

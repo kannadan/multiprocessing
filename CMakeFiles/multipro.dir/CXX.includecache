@@ -6,16 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/kannadan/CLionProjects/multipro/lodepng/lodepng.cpp
-lodepng.h
-/home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
-limits.h
--
-stdio.h
--
-stdlib.h
--
-
 /home/kannadan/CLionProjects/multipro/lodepng/lodepng.h
 string.h
 -
